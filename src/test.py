@@ -20,13 +20,13 @@ class Widget(QWidget):
                       "Supermarket": 230.4, "Internet": 29.99, "Bars": 21.85,
                       "Public transportation": 60.0, "Coffee": 22.45, "Restaurants": 120}
 
-        # Left
+        # Left Tabela com a listagem
         self.table = QTableWidget()
         self.table.setColumnCount(2)
         self.table.setHorizontalHeaderLabels(["Description", "Price"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-        # Chart
+        # Chart Gráfico 
         self.chart_view = QChartView()
         self.chart_view.setRenderHint(QPainter.Antialiasing)
 
@@ -44,7 +44,7 @@ class Widget(QWidget):
         self.add.setEnabled(False)
 
         form_layout = QFormLayout()
-        form_layout.addRow("Description", self.description)
+        form_layout.add("Description", self.description)
         form_layout.addRow("Price", self.price)
         self.right = QVBoxLayout()
         self.right.addLayout(form_layout)

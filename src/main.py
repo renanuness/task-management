@@ -1,64 +1,67 @@
-from PySide6.QtWidgets import QApplication, QPushButton, QLineEdit, QDialog, QVBoxLayout,QHBoxLayout, QMainWindow, QListWidget, QWidget, QFrame
-from PySide6.QtCore import Slot
+import sys
+from PySide6.QtWidgets import QApplication, QPushButton, QLineEdit, QTableWidget,QTableWidgetItem, QVBoxLayout,QHBoxLayout, QMainWindow, QListWidget, QWidget, QFrame, QLabel
+from PySide6.QtCore import Qt, Slot
 import PySide6.QtQuick
 
-class Form(QDialog):
-
-    def __init__(self, parent=None):
-        super(Form, self).__init__(parent)
-        self.setWindowTitle("My form")
-        
-        self.edit = QLineEdit('Write your name:')
-        self.button = QPushButton('Ok')
-        self.button.clicked.connect(self.greetings)
-
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.edit)
-        layout.addWidget(self.button)
-
-        self.setLayout(layout)
-        
-    def greetings(self):
-        print(f'Hello, {self.edit.text()}')
-
+tasksMock = [
+    {"taskDescription": "Study algorithms", "timeSpent": 2},
+    {"taskDescription": "Work on React project", "timeSpent": 3},
+    {"taskDescription": "Develop web scraper", "timeSpent": 1.5},
+    {"taskDescription": "Write blog post on DevOps", "timeSpent": 2.5},
+    {"taskDescription": "Practice coding challenges", "timeSpent": 1}
+]
 
 class Widget(QWidget):
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout(self)
-
-
-        #text input
+        
+        #left
+        leftLayout = QVBoxLayout(self)
+       
+        #input de tarefa
+        addTaskForm = QHBoxLayout(self)
         self.description = QLineEdit()
         self.description.setClearButtonEnabled(True)
-        
-        leftLayout = QVBoxLayout(self)
-        button = QPushButton("Nova tarefa", self)
-        button.setGeometry(150, 130, 50, 30)
-        leftLayout.addWidget(button)
-        leftLayout.addWidget(self.description)
+        self.saveTask = QPushButton("Save Task")
+        addTaskForm.addWidget(self.description)
+        addTaskForm.addWidget(self.saveTask)
 
+
+        #task list
+        taskList = QTableWidget(self)
+        taskList.setColumnCount(2)
+        taskList.setHorizontalHeaderLabels(['Task','Time Spent'])
+        taskList.setRowCount(len(tasksMock))
+        print(len(tasksMock))
+        row = 0
+        for e in tasksMock:
+            print(e['timeSpent'])
+            taskList.setItem(row,0, QTableWidgetItem(e['taskDescription']))
+            taskList.setItem(row,1, QTableWidgetItem(str(e['timeSpent'])))
+            row += 1
+        
+        leftLayout.addLayout(addTaskForm, 1)
+        leftLayout.addWidget(taskList, 4)
+
+        #right
         rightLayout = QVBoxLayout(self)
-        button2 = QPushButton("Nova tarefa", self)
-        button2.setGeometry(150, 130, 50, 30)
-        rightLayout.addWidget(button2)
-
-        self.layout.addLayout(leftLayout)
-        self.layout.addLayout(rightLayout)
-
-class LeftBar(QListWidget):
-    def __init__(self, itens, parent=None):
-        super(LeftBar, self).__init__(parent)
-        self.addItems(itens)
-
+        rightLayout.setAlignment(Qt.AlignmentFlag(2))
+        self.selectedTask = QLabel("Selected Task")
         
+        rightLayout.addWidget(self.selectedTask)
+        
+
+        self.layout.addLayout(leftLayout, 1)
+        self.layout.addLayout(rightLayout, 1)
+
 class MainWindow(QMainWindow):
     def __init__(self, widget):
         super().__init__()
 
         self.setWindowTitle("Exemplo PyQt")
 
-                # Menu
+        # Menu
         self.menu = self.menuBar()
         self.file_menu = self.menu.addMenu("File")
 
@@ -98,6 +101,6 @@ class MainWindow(QMainWindow):
 app = QApplication([])
 widget = Widget()
 window = MainWindow(widget)
-window.resize(800, 600)
+window.resize(1200, 900)
 window.show()
 app.exec()
