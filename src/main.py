@@ -23,38 +23,57 @@ class Widget(QWidget):
         addTaskForm = QHBoxLayout(self)
         self.description = QLineEdit()
         self.description.setClearButtonEnabled(True)
+
         self.saveTask = QPushButton("Save Task")
+        self.saveTask.clicked.connect(self.addTaskToList)
         addTaskForm.addWidget(self.description)
         addTaskForm.addWidget(self.saveTask)
 
-
         #task list
-        taskList = QTableWidget(self)
-        taskList.setColumnCount(2)
-        taskList.setHorizontalHeaderLabels(['Task','Time Spent'])
-        taskList.setRowCount(len(tasksMock))
-        print(len(tasksMock))
-        row = 0
-        for e in tasksMock:
-            print(e['timeSpent'])
-            taskList.setItem(row,0, QTableWidgetItem(e['taskDescription']))
-            taskList.setItem(row,1, QTableWidgetItem(str(e['timeSpent'])))
-            row += 1
+        self.taskList = self.getTaskList()
         
         leftLayout.addLayout(addTaskForm, 1)
-        leftLayout.addWidget(taskList, 4)
+        leftLayout.addWidget(self.taskList, 4)
 
         #right
         rightLayout = QVBoxLayout(self)
-        rightLayout.setAlignment(Qt.AlignmentFlag(2))
         self.selectedTask = QLabel("Selected Task")
+    
+        rightLayout.addWidget(self.selectedTask, 1)
         
-        rightLayout.addWidget(self.selectedTask)
-        
-
         self.layout.addLayout(leftLayout, 1)
         self.layout.addLayout(rightLayout, 1)
 
+    
+    def addTaskToList(self):
+        print(self.description.text())
+
+    def cellSelected(self, row, col):
+        self.taskList.clearSelection()
+        self.taskList.selectRow(row)
+        items = self.taskList.selectedItems()
+        for item in items:
+            print(item.text())
+
+    def getTaskList(self):
+        
+        taskList = QTableWidget(self)
+        taskList.setColumnCount(2)
+        taskList.setHorizontalHeaderLabels(['Task','Time Spent', 'Select'])
+        taskList.setRowCount(len(tasksMock))
+        
+        row = 0
+        id = 0
+        for e in tasksMock:
+            taskList.setItem(row,0, QTableWidgetItem(e['taskDescription']))
+            taskList.setItem(row,1, QTableWidgetItem(str(e['timeSpent'])))
+            taskList.setItem(row,2, QTableWidgetItem(id))
+            row += 1
+            id += 1
+        taskList.cellClicked.connect(self.cellSelected)
+        
+        return taskList
+    
 class MainWindow(QMainWindow):
     def __init__(self, widget):
         super().__init__()
